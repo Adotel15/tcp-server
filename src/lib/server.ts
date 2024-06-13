@@ -1,17 +1,19 @@
 import http from 'http';
 
+type serverCallbackType = (
+    req: http.IncomingMessage,
+    res: http.ServerResponse<http.IncomingMessage> & {
+        req: http.IncomingMessage;
+    }
+) => void;
+
 class Server {
     host: string;
     port: string;
     httpServer: any;
     routes: {
         path: string;
-        controller: (
-            req: http.IncomingMessage,
-            res: http.ServerResponse<http.IncomingMessage> & {
-                req: http.IncomingMessage;
-            }
-        ) => void;
+        controller: serverCallbackType;
     }[];
 
     constructor() {
@@ -20,14 +22,7 @@ class Server {
         this.routes = [];
     }
 
-    createServer = (
-        callback?: (
-            req: http.IncomingMessage,
-            res: http.ServerResponse<http.IncomingMessage> & {
-                req: http.IncomingMessage;
-            }
-        ) => void
-    ) => {
+    createServer = (callback?: serverCallbackType) => {
         this.httpServer = http.createServer(async (req, res) => {
             const findIndex = this.routes.findIndex(
                 (item) => item.path === req.url
@@ -44,15 +39,7 @@ class Server {
         });
     };
 
-    route = (
-        route: string,
-        callbackController: (
-            req: http.IncomingMessage,
-            res: http.ServerResponse<http.IncomingMessage> & {
-                req: http.IncomingMessage;
-            }
-        ) => void
-    ) => {
+    route = (route: string, callbackController: serverCallbackType) => {
         this.routes = [
             ...this.routes,
             { path: route, controller: callbackController },
