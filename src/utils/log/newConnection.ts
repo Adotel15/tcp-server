@@ -3,9 +3,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const logNewConnection = async (host: string) => {
+const logNewConnection = async (
+    remoteAddress: string,
+    remotePort: number,
+    destinationPath: string
+) => {
     try {
-        await fs.appendFile(process.env.CONNECTION_LOGS_PATH, host);
+        await fs.appendFile(
+            process.env.CONNECTION_LOGS_PATH,
+            `${new Date().toUTCString()} - PATH: ${destinationPath} FROM ${remoteAddress}: ${remotePort}\n`
+        );
     } catch (error) {
         console.log(error);
     }

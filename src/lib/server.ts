@@ -1,7 +1,5 @@
 import http from 'http';
 
-import { logNewConnection } from '../utils/log/newConnection.js';
-
 class Server {
     host: string;
     port: string;
@@ -31,24 +29,17 @@ class Server {
         ) => void
     ) => {
         this.httpServer = http.createServer(async (req, res) => {
-            const host = req.socket.remoteAddress;
-            const port = req.socket.remotePort;
-            const destinationPath = req.url;
-
-            const requestMetadata = `${new Date().toUTCString()} - to ${destinationPath} from ${host}: ${port}\n`;
-
-            logNewConnection(requestMetadata);
-
             const findIndex = this.routes.findIndex(
-                (item) => item.path === destinationPath
+                (item) => item.path === req.url
             );
 
             if (findIndex === -1) {
                 res.statusCode = 404;
-                res.end('Route not found');
+                return res.end('Route not found');
             }
 
-            this.routes[findIndex]?.controller(req, res);
+            this.routes[findIndex]!.controller(req, res);
+
             callback && callback(req, res);
         });
     };
