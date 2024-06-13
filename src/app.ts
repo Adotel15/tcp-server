@@ -19,7 +19,7 @@ appServer.createServer((req, res) => {
     );
 });
 
-appServer.route('/', async (_, res) => {
+appServer.route('GET', '/', async (_, res) => {
     const html = await fs.readFile('./public/index.html', 'utf8');
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html');
