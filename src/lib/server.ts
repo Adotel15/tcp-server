@@ -1,16 +1,25 @@
 import http from 'http';
-import fs from 'fs/promises';
 
 import { logNewConnection } from '../utils/log/newConnection.js';
 
 class Server {
-    #http_server: any;
-    #host: string;
-    #port: string;
+    host: string;
+    port: string;
+    httpServer: any;
+    routes: {
+        path: string;
+        controller: (
+            req: http.IncomingMessage,
+            res: http.ServerResponse<http.IncomingMessage> & {
+                req: http.IncomingMessage;
+            }
+        ) => void;
+    }[];
 
     constructor() {
-        this.#host = '';
-        this.#port = '3000';
+        this.host = '';
+        this.port = '3000';
+        this.routes = [];
     }
 
     createServer = (
@@ -21,7 +30,7 @@ class Server {
             }
         ) => void
     ) => {
-        this.#http_server = http.createServer(async (req, res) => {
+        this.httpServer = http.createServer(async (req, res) => {
             const host = req.socket.remoteAddress;
             const port = req.socket.remotePort;
             const destinationPath = req.url;
@@ -30,42 +39,54 @@ class Server {
 
             logNewConnection(requestMetadata);
 
-            switch (destinationPath) {
-                case '/':
-                    const html = await fs.readFile(
-                        './public/index.html',
-                        'utf8'
-                    );
-                    res.statusCode = 200;
-                    res.setHeader('Content-Type', 'text/html');
-                    res.end(html);
-                    break;
-                default:
-                    res.statusCode = 404;
-                    res.end('Route not found');
-                    break;
+            const findIndex = this.routes.findIndex(
+                (item) => item.path === destinationPath
+            );
+
+            if (findIndex === -1) {
+                res.statusCode = 404;
+                res.end('Route not found');
             }
 
-            res.end('');
+            this.routes[findIndex]?.controller(req, res);
             callback && callback(req, res);
         });
     };
 
+    route = (
+        route: string,
+        callbackController: (
+            req: http.IncomingMessage,
+            res: http.ServerResponse<http.IncomingMessage> & {
+                req: http.IncomingMessage;
+            }
+        ) => void
+    ) => {
+        this.routes = [
+            ...this.routes,
+            { path: route, controller: callbackController },
+        ];
+    };
+
     serverListen = (port: string, callback: () => void) => {
-        this.#setPort(port);
-        this.#http_server.listen(port, callback);
+        this.setPort(port);
+        this.httpServer.listen(port, callback);
     };
 
     getHost = () => {
-        return this.#host;
+        return this.host;
     };
 
-    #setPort = (port: string) => {
-        this.#port = port;
+    setHost = (host: string) => {
+        this.host = host;
     };
 
     getPort = () => {
-        return this.#port;
+        return this.port;
+    };
+
+    setPort = (port: string) => {
+        this.port = port;
     };
 }
 
