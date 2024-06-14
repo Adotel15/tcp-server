@@ -61,7 +61,16 @@ class Server {
     };
 
     newRoute = () => {
+        /**
+         * When this function is called, it should return a new route instance to configure.
+         * We need a way to register the route into the server, and then have the capcity to get to that route
+         * instance, when incoming request reaches server
+         */
         return new Route();
+    };
+
+    use = (route: Route) => {
+        /** TODO: how to implement the route to the server   */
     };
 
     serverListen = (port: string, callback: () => void) => {
