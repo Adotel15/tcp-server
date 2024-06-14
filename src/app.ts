@@ -11,7 +11,7 @@ const SERVER_PORT = process.env.SERVER_PORT;
 
 const appServer = new Server();
 
-appServer.createServer((req, res) => {
+appServer.createServer((req, _) => {
     logNewConnection(
         req.socket.remoteAddress ?? 'no-remote-host',
         req.socket.remotePort ?? 0,

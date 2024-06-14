@@ -1,6 +1,8 @@
 import http from 'http';
 
-type serverCallback = (
+import Route from './route.js';
+
+export type serverCallback = (
     req: http.IncomingMessage,
     res: http.ServerResponse<http.IncomingMessage> & {
         req: http.IncomingMessage;
@@ -10,14 +12,15 @@ type serverCallback = (
 type httpMethods = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
 class Server {
-    host: string;
-    port: string;
-    httpServer: any;
-    routes: {
+    public host: string;
+    public port: string;
+    public httpServer: any;
+    public routes: {
         path: string;
         method: httpMethods;
         controller: serverCallback;
     }[];
+    public newRoutes: any;
 
     constructor() {
         this.host = '';
@@ -57,6 +60,10 @@ class Server {
         });
     };
 
+    newRoute = () => {
+        return new Route();
+    };
+
     serverListen = (port: string, callback: () => void) => {
         this.setPort(port);
         this.httpServer.listen(port, callback);
@@ -78,5 +85,4 @@ class Server {
         this.port = port;
     };
 }
-
 export default Server;
