@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// TODO: Create log system
 const logNewConnection = async (
     remoteAddress: string,
     remotePort: number,
