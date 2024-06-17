@@ -74,24 +74,7 @@ class Server {
     };
 
     serverListen = (port: string, callback: () => void) => {
-        this.setPort(port);
         this.httpServer.listen(port, callback);
-    };
-
-    getHost = () => {
-        return this.host;
-    };
-
-    setHost = (host: string) => {
-        this.host = host;
-    };
-
-    getPort = () => {
-        return this.port;
-    };
-
-    setPort = (port: string) => {
-        this.port = port;
     };
 }
 export default Server;
