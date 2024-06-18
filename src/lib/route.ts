@@ -9,6 +9,7 @@ class Route {
         this.uid = randomUUID();
     }
 
+    // Extends
     get = (path: string, callback: serverCallback) => {};
 
     post = (path: string, callback: serverCallback) => {};
